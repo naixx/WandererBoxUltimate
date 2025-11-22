@@ -6,14 +6,17 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ASCOM.DeviceInterface;
+using ASCOM.Common.DeviceInterfaces;
 using ASCOM.Utilities;
+using StateValue = ASCOM.Common.DeviceInterfaces.StateValue;
+using Timer = System.Threading.Timer;
 using TraceLogger = ASCOM.Tools.TraceLogger;
 
 // ReSharper disable All
@@ -171,7 +174,7 @@ namespace ASCOM.WandererBoxes
     public static SerialPort SP = new SerialPort();
     public static Serial objSerial;
     private PlusV2Monitor M3;
-    private UltimateV2Monitor M4;
+    private UltimateV2Monitor2 M4;
     internal TraceLogger tl;
     internal static string selectedmodel = "none";
     internal static string lang = "en";
@@ -259,14 +262,7 @@ namespace ASCOM.WandererBoxes
       }
     }
 
-    public ArrayList SupportedActions
-    {
-      get
-      {
-        this.tl.LogMessage("SupportedActions Get", "Returning empty arraylist");
-        return new ArrayList();
-      }
-    }
+
 
     public string Action(string actionName, string actionParameters)
     {
@@ -297,6 +293,11 @@ namespace ASCOM.WandererBoxes
       this.tl.Enabled = false;
       this.tl.Dispose();
       this.tl = (TraceLogger) null;
+    }
+
+    public void CancelAsync(short id)
+    {
+      throw new MethodNotImplementedException();
     }
 
     public bool Connected
@@ -1010,23 +1011,106 @@ namespace ASCOM.WandererBoxes
       }
     }
 
+    // private void OnTimedEvent3()
+    // {
+    //   switch (Switch.selectedmodel)
+    //   {
+    //     case "PlusV2":
+    //       this.M3 = new PlusV2Monitor();
+    //       int num1;
+    //       Task.Run((System.Action) (() => num1 = (int) this.M3.ShowDialog()));
+    //       break;
+    //     case "UltimateV2":
+    //       this.M4 = new UltimateV2Monitor2();
+    //       int num2;
+    //       Task.Run((System.Action) (() => num2 = (int) this.M4.ShowDialog()));
+    //       break;
+    //   }
+    // }
+
+    private Timer updateTimer;
+    private Thread monitorThread;
+    
     private void OnTimedEvent3()
     {
-      switch (Switch.selectedmodel)
-      {
-        case "PlusV2":
-          this.M3 = new PlusV2Monitor();
-          int num1;
-          Task.Run((System.Action) (() => num1 = (int) this.M3.ShowDialog()));
-          break;
-        case "UltimateV2":
-          this.M4 = new UltimateV2Monitor();
-          int num2;
-          Task.Run((System.Action) (() => num2 = (int) this.M4.ShowDialog()));
-          break;
-      }
+        // Создаем окно если его нет
+        if (monitorThread == null || !monitorThread.IsAlive)
+        {
+            monitorThread = new Thread(() =>
+            {
+                switch (Switch.selectedmodel)
+                {
+                    case "PlusV2":
+                        this.M3 = new PlusV2Monitor();
+                        Application.Run(this.M3);
+                        break;
+                        
+                    case "UltimateV2":
+                        this.M4 = new UltimateV2Monitor2();
+                        Application.Run(this.M4);
+                        break;
+                }
+            });
+            
+            monitorThread.SetApartmentState(ApartmentState.STA);
+            monitorThread.IsBackground = true;
+            monitorThread.Start();
+            
+            // Даем время на создание формы
+            Thread.Sleep(500);
+            
+            // Запускаем таймер обновления данных
+            StartUpdateTimer();
+        }
     }
-
+    
+    private void StartUpdateTimer()
+    {
+        if (updateTimer == null)
+        {
+            updateTimer = new System.Threading.Timer(UpdateMonitorData, null, 0, 400); // Каждую секунду
+        }
+    }
+    
+    private void UpdateMonitorData(object state)
+    {
+        try
+        {
+            switch (Switch.selectedmodel)
+            {
+                case "PlusV2":
+                    if (this.M3 != null && !this.M3.IsDisposed)
+                    {
+                        // // Передаем данные в форму
+                        // this.M3.UpdateData(
+                        //     Switch.voltage, 
+                        //     Switch.current, 
+                        //     Switch.DHTTstate ? Switch.DHTT : Switch.DSTstate ? Switch.DST : (double?)null,
+                        //     Switch.DHTHstate ? Switch.DHTH : (double?)null,
+                        //     Switch.DHTTstate,
+                        //     Switch.DSTstate,
+                        //     Switch.DHTHstate,
+                        //     Switch.Sensortype
+                        // );
+                    }
+                    break;
+                    
+                case "UltimateV2":
+                    if (this.M4 != null && !this.M4.IsDisposed)
+                    {
+                        // Передаем данные в форму
+                        this.M4.OnTimedEvent(null,null);
+                    }
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Логируем ошибку
+            System.Diagnostics.Debug.WriteLine($"Error updating monitor: {ex.Message}");
+        }
+    }
+    
     public string Description
     {
       get
@@ -1050,6 +1134,7 @@ namespace ASCOM.WandererBoxes
     }
 
     public string Name => "WandererBoxes All-in-one(1) 1.8";
+    public IList<string> SupportedActions { get; }
 
     public short MaxSwitch
     {
@@ -1066,6 +1151,9 @@ namespace ASCOM.WandererBoxes
         }
       }
     }
+
+    public bool Connecting { get; }
+    public List<StateValue> DeviceState { get; }
 
     public string GetSwitchName(short id)
     {
@@ -2246,6 +2334,36 @@ namespace ASCOM.WandererBoxes
           this.WriteCustomization();
           break;
       }
+    }
+
+    public void Connect()
+    {
+      throw new MethodNotImplementedException();
+    }
+
+    public void Disconnect()
+    {
+      throw new MethodNotImplementedException();
+    }
+
+    public void SetAsync(short id, bool state)
+    {
+      throw new MethodNotImplementedException();
+    }
+
+    public void SetAsyncValue(short id, double value)
+    {
+      throw new MethodNotImplementedException();
+    }
+
+    public bool CanAsync(short id)
+    {
+      return false;
+    }
+
+    public bool StateChangeComplete(short id)
+    {
+      throw new MethodNotImplementedException();
     }
 
     private void Validate(string message, short id)

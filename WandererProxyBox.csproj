@@ -68,8 +68,8 @@
     <Reference Include="ASCOM.Common">
       <HintPath>..\WandererNinaPlugin\packages\ASCOM.Common.Components.2.2.1\lib\netstandard2.0\ASCOM.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ASCOM.DeviceInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=565de7938946fba7, processorArchitecture=MSIL">
-      <HintPath>..\WandererNinaPlugin\packages\ASCOM.DeviceInterfaces.7.0.0\lib\net472\ASCOM.DeviceInterfaces.dll</HintPath>
+    <Reference Include="ASCOM.DeviceInterfaces">
+      <HintPath>C:\Windows\assembly\GAC_MSIL\ASCOM.DeviceInterfaces\6.0.0.0__565de7938946fba7\ASCOM.DeviceInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="ASCOM.Exceptions">
       <HintPath>C:\Users\astra\.nuget\packages\ascom.exception.library\6.6.1\lib\netstandard2.0\ASCOM.Exceptions.dll</HintPath>
@@ -80,9 +80,35 @@
     <Reference Include="ASCOM.Utilities">
       <HintPath>C:\Windows\assembly\GAC_MSIL\ASCOM.Utilities\6.0.0.0__565de7938946fba7\ASCOM.Utilities.dll</HintPath>
     </Reference>
+    <Reference Include="HarfBuzzSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\HarfBuzzSharp.8.3.1.2\lib\net462\HarfBuzzSharp.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\WandererNinaPlugin\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot, Version=5.1.57.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\ScottPlot.5.1.57\lib\net462\ScottPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot.WinForms, Version=5.1.57.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\ScottPlot.WinForms.5.1.57\lib\net462\ScottPlot.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp, Version=3.119.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\SkiaSharp.3.119.1\lib\net462\SkiaSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp.HarfBuzz, Version=3.119.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\SkiaSharp.HarfBuzz.3.119.1\lib\net462\SkiaSharp.HarfBuzz.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp.Views.Desktop.Common, Version=3.119.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\SkiaSharp.Views.Desktop.Common.3.119.1\lib\net462\SkiaSharp.Views.Desktop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp.Views.WindowsForms, Version=3.119.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\SkiaSharp.Views.WindowsForms.3.119.1\lib\net462\SkiaSharp.Views.WindowsForms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Common, Version=4.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\WandererNinaPlugin\packages\System.Drawing.Common.4.7.3\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>   
+      <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
     </Reference>
     <Reference Include="System" />
       <Reference Include="System.Resources.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -91,9 +117,17 @@
 
     <Reference Include="System.Drawing" />
 
+    <Reference Include="System.Text.Json">
+      <HintPath>..\WandererNinaPlugin\packages\System.Text.Json.9.0.9\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
   </ItemGroup>
+    <Target Name="CopyDependencies" AfterTargets="Build">
+        <Copy SourceFiles="@(ReferenceCopyLocalPaths)"
+              DestinationFolder="$(OutputPath)"
+              SkipUnchangedFiles="true" />
+    </Target>
   <ItemGroup>
     <Compile Include="ClassFactory.cs" />
     <Compile Include="Properties\Resources.cs" />
@@ -103,13 +137,16 @@
     <Compile Include="SwitchDriver\Form2.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SwitchDriver\Full.cs" />
     <Compile Include="SwitchDriver\PlusV2Monitor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SwitchDriver\Profile.cs" />
+    <Compile Include="SwitchDriver\RegistryAccess.cs" />
     <Compile Include="SwitchDriver\selectmodel.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SwitchDriver\Serial.cs" />
     <Compile Include="SwitchDriver\SetupForPlusV2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,9 +163,11 @@
     <Compile Include="GarbageCollection.cs" />
     <Compile Include="LocalServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SwitchDriver\UltimateV2Monitor2.cs" />
     <Compile Include="SwitchDriver\UltimateV2Monitor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SwitchDriver\Slide.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmMain.cs</DependentUpon>
@@ -207,5 +246,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\WandererNinaPlugin\packages\ASCOM.Exception.Library.7.0.1\build\ASCOM.Exception.Library.props')" Text="$([System.String]::Format('$(ErrorText)', '..\WandererNinaPlugin\packages\ASCOM.Exception.Library.7.0.1\build\ASCOM.Exception.Library.props'))" />
     <Error Condition="!Exists('..\WandererNinaPlugin\packages\ASCOM.AstrometryTools.2.2.1\build\ASCOM.AstrometryTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\WandererNinaPlugin\packages\ASCOM.AstrometryTools.2.2.1\build\ASCOM.AstrometryTools.props'))" />
+    <Error Condition="!Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.macOS.3.119.1\build\net462\SkiaSharp.NativeAssets.macOS.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.macOS.3.119.1\build\net462\SkiaSharp.NativeAssets.macOS.targets'))" />
+    <Error Condition="!Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Win32.3.119.1\build\net462\SkiaSharp.NativeAssets.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Win32.3.119.1\build\net462\SkiaSharp.NativeAssets.Win32.targets'))" />
+    <Error Condition="!Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.3.119.1\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.3.119.1\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets'))" />
   </Target>
+  <Import Project="..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.macOS.3.119.1\build\net462\SkiaSharp.NativeAssets.macOS.targets" Condition="Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.macOS.3.119.1\build\net462\SkiaSharp.NativeAssets.macOS.targets')" />
+  <Import Project="..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Win32.3.119.1\build\net462\SkiaSharp.NativeAssets.Win32.targets" Condition="Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Win32.3.119.1\build\net462\SkiaSharp.NativeAssets.Win32.targets')" />
+  <Import Project="..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.3.119.1\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets" Condition="Exists('..\WandererNinaPlugin\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.3.119.1\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets')" />
 </Project>
