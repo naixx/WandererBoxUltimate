@@ -12,7 +12,6 @@
 // Modified by Chris Rowland and Peter Simpson to allow use with multiple devices of the same type March 2011
 //
 //
-using ASCOM.Utilities;
 using Microsoft.Win32;
 using System;
 using System.Collections;
@@ -23,6 +22,8 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ASCOM.Tools;
+using ASCOM.WandererBoxes;
 
 namespace ASCOM.LocalServer
 {
@@ -56,7 +57,7 @@ namespace ASCOM.LocalServer
         static void Main(string[] args)
         {
             // Create a trace logger for the local server.
-            TL = new TraceLogger("", "naixxWanderer.LocalServer")
+            TL = new TraceLogger( "naixxWanderer.LocalServer", true)
             {
                 Enabled = true // Enable to debug local server operation (not usually required). Drivers have their own independent trace loggers.
             };
@@ -156,13 +157,13 @@ namespace ASCOM.LocalServer
                         }
                         catch (Exception ex)
                         {
-                            TL.LogMessageCrLf("Main", $"Exception (inner) when disposing of hardware class.\r\n{ex}");
+                            TL.LogMessage("Main", $"Exception (inner) when disposing of hardware class.\r\n{ex}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    TL.LogMessageCrLf("Main", $"Exception (outer) when disposing of hardware class.\r\n{ex}");
+                    TL.LogMessage("Main", $"Exception (outer) when disposing of hardware class.\r\n{ex}");
                 }
 
                 // Now stop the Garbage Collector thread.
@@ -323,7 +324,7 @@ namespace ASCOM.LocalServer
             }
             catch (Exception e)
             {
-                TL.LogMessageCrLf("PopulateListOfAscomDrivers", $"Exception: {e}");
+                TL.LogMessage("PopulateListOfAscomDrivers", $"Exception: {e}");
                 MessageBox.Show($"Failed to load served COM class assembly from within this local server - {e.Message}", "Rotator Simulator", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
@@ -384,7 +385,7 @@ namespace ASCOM.LocalServer
             }
             catch (Exception ex)
             {
-                TL.LogMessageCrLf("RegisterObjects", $"Setting AppID exception: {ex}");
+                TL.LogMessage("RegisterObjects", $"Setting AppID exception: {ex}");
                 MessageBox.Show("Error while registering the server:\n" + ex.ToString(), "ASCOM.naixxWanderer.Switch", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
@@ -441,12 +442,12 @@ namespace ASCOM.LocalServer
                     using (var profile = new Profile())
                     {
                         profile.DeviceType = deviceType;
-                        profile.Register(progId, chooserName);
+                       //TODO profile.Register(progId, chooserName);
                     }
                 }
                 catch (Exception ex)
                 {
-                    TL.LogMessageCrLf("RegisterObjects", $"Driver registration exception: {ex}");
+                    TL.LogMessage("RegisterObjects", $"Driver registration exception: {ex}");
                     MessageBox.Show("Error while registering the server:\n" + ex.ToString(), "ASCOM.naixxWanderer.Switch", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     bFail = true;
                 }
@@ -550,7 +551,7 @@ namespace ASCOM.LocalServer
             }
             catch (Exception ex)
             {
-                TL.LogMessageCrLf("IsAdministrator", $"Exception: {ex}");
+                TL.LogMessage("IsAdministrator", $"Exception: {ex}");
                 MessageBox.Show(ex.ToString(), "ASCOM.naixxWanderer.Switch", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             return;

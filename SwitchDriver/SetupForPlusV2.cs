@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ASCOM.Utilities;
+using ASCOM.Tools;
 using ASCOM.WandererBoxes.Properties;
 
 namespace ASCOM.WandererBoxes

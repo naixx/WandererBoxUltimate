@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ASCOM.Utilities;
+using ASCOM.Tools;
 
 namespace ASCOM.WandererBoxes
 {
@@ -948,7 +948,7 @@ namespace ASCOM.WandererBoxes
       this.textBox14.Text = "USB2.0-2";
       this.textBox14.TextAlign = HorizontalAlignment.Center;
       this.textBox14.TextChanged += new EventHandler(this.textBox14_TextChanged);
-      this.pictureBox7.Image = (Image) componentResourceManager.GetObject("pictureBox7.Image");
+      // this.pictureBox7.Image = (Image) componentResourceManager.GetObject("pictureBox7.Image");
       this.pictureBox7.Location = new Point(-39, 134);
       this.pictureBox7.Margin = new Padding(6);
       this.pictureBox7.Name = "pictureBox7";

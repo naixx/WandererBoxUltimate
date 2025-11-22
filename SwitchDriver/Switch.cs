@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ASCOM.DeviceInterface;
 using ASCOM.Utilities;
+using TraceLogger = ASCOM.Tools.TraceLogger;
+
 // ReSharper disable All
 
 namespace ASCOM.WandererBoxes
@@ -35,7 +37,6 @@ namespace ASCOM.WandererBoxes
     internal static string traceStateDefault = "false";
     internal static string comPort;
     private bool connectedState;
-    private Util utilities;
     internal static bool DHTTstate = false;
     internal static bool DHTHstate = false;
     internal static bool DSTstate = false;
@@ -64,7 +65,7 @@ namespace ASCOM.WandererBoxes
     internal static double DST;
     internal static int datacount;
     internal static string Sensortype = "None";
-    internal static string AscomSensorType = "None";
+    internal static string AscomSensorType = "Sensortype";
     internal static string heater1Mode;
     internal static string heater2Mode;
     internal static string heater3Mode;
@@ -162,7 +163,6 @@ namespace ASCOM.WandererBoxes
     internal static string DC5name;
     internal static string DC6name;
     internal static string USBname;
-    private ASCOM.Astrometry.AstroUtils.AstroUtils astroUtilities;
     private selectmodel S;
     private SetupForUltimateV2 UltimateV2;
     private SetupForPlusV2 PlusV2;
@@ -178,15 +178,15 @@ namespace ASCOM.WandererBoxes
 
     public Switch()
     {
-      this.tl = new TraceLogger("", "WandererBoxes All-in-one(1) 1.8");
+      this.tl = new TraceLogger( "WandererBoxes All-in-one(1) 1.8", true);
+      tl.Enabled = true;
+      tl.LogMessage(nameof (Switch), "test");
       this.ReadProfile();
       this.ReadSelectedModel();
       this.ReadCustomization();
       this.WriteCustomization();
       this.tl.LogMessage(nameof (Switch), "Starting initialisation");
       this.connectedState = false;
-      this.utilities = new Util();
-      this.astroUtilities = new ASCOM.Astrometry.AstroUtils.AstroUtils();
       this.tl.LogMessage(nameof (Switch), "Completed initialisation");
     }
 
@@ -297,10 +297,6 @@ namespace ASCOM.WandererBoxes
       this.tl.Enabled = false;
       this.tl.Dispose();
       this.tl = (TraceLogger) null;
-      this.utilities.Dispose();
-      this.utilities = (Util) null;
-      this.astroUtilities.Dispose();
-      this.astroUtilities = (ASCOM.Astrometry.AstroUtils.AstroUtils) null;
     }
 
     public bool Connected
@@ -315,7 +311,7 @@ namespace ASCOM.WandererBoxes
         switch (Switch.selectedmodel)
         {
           case "UltimateV2":
-            this.tl = new TraceLogger("", "WandererBoxUltimate");
+            this.tl = new TraceLogger( "WandererBoxUltimate", true);
             this.ReadProfile();
             this.ReadCustomization();
             this.tl.LogMessage(nameof (Switch), "Starting initialisation");
@@ -395,18 +391,14 @@ namespace ASCOM.WandererBoxes
             Switch.i = 0;
             Switch.datacount = 0;
             this.connectedState = false;
-            this.utilities = new Util();
-            this.astroUtilities = new ASCOM.Astrometry.AstroUtils.AstroUtils();
             this.tl.LogMessage(nameof (Switch), "Completed initialisation");
             break;
           case "PlusV2":
             this.ReadCustomization();
-            this.tl = new TraceLogger("", "WandererSwitch");
+            this.tl = new TraceLogger( "WandererSwitch", true);
             this.ReadProfile();
             this.ReadCustomization();
             this.connectedState = false;
-            this.utilities = new Util();
-            this.astroUtilities = new ASCOM.Astrometry.AstroUtils.AstroUtils();
             Thread.Sleep(10);
             this.DC1_3state = !(Switch.DC3status == "On") ? 0 : 1;
             Thread.Sleep(10);
@@ -477,7 +469,7 @@ namespace ASCOM.WandererBoxes
         {
           if (Switch.manualCOM == "false")
           {
-            this.tl.LogMessage(nameof (Connected), "Set {0}", value);
+            this.tl.LogMessage(nameof (Connected), @"Set {value}");
             if (value == this.IsConnected)
               return;
             if (value)
@@ -671,7 +663,7 @@ namespace ASCOM.WandererBoxes
           }
           else
           {
-            this.tl.LogMessage(nameof (Connected), "Set {0}", value);
+            this.tl.LogMessage(nameof (Connected), @"Set {value}");
             if (value == this.IsConnected)
               return;
             if (value)
@@ -847,7 +839,7 @@ namespace ASCOM.WandererBoxes
         }
         else
         {
-          this.tl.LogMessage(nameof (Connected), "Set {0}", value);
+          this.tl.LogMessage(nameof (Connected), @"Set {value}");
           if (value == this.IsConnected)
             return;
           if (value)
@@ -2290,10 +2282,10 @@ namespace ASCOM.WandererBoxes
       using (Profile profile = new Profile())
       {
         profile.DeviceType = nameof (Switch);
-        if (bRegister)
-          profile.Register(Switch.driverID, Switch.driverDescription);
-        else
-          profile.Unregister(Switch.driverID);
+      //  if (bRegister)
+          //profile.Register(Switch.driverID, Switch.driverDescription);
+       // else
+        //  profile.Unregister(Switch.driverID);
       }
     }
 

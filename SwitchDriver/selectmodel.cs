@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO.Ports;
 using System.Windows.Forms;
-using ASCOM.Utilities;
+
 using ASCOM.WandererBoxes.Properties;
 
 namespace ASCOM.WandererBoxes
@@ -73,75 +73,75 @@ namespace ASCOM.WandererBoxes
           using (Profile profile = new Profile())
           {
             profile.DeviceType = "Switch";
-            Switch.DC1name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC1name, string.Empty, "PWM 1");
-            Switch.DC2name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC2name, string.Empty, "PWM 2");
-            Switch.DC3name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC3name, string.Empty, "PWM 3");
-            Switch.DC4name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC4name, string.Empty, "DC OUT 4");
-            Switch.DC5_8name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC5_8name, string.Empty, "DC OUT 5-8");
-            Switch.DC9name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomDC9name, string.Empty, "DC9 Always ON");
-            Switch.USB3_1name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB3_1name, string.Empty, "USB3.1-1");
-            Switch.USB3_2name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB3_2name, string.Empty, "USB3.1-2");
-            Switch.USB3_3name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB3_3name, string.Empty, "USB3.1-3");
-            Switch.USB2_1name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_1name, string.Empty, "USB2.0-1");
-            Switch.USB2_2name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_2name, string.Empty, "USB2.0-2");
-            Switch.USB2_3name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_3name, string.Empty, "USB2.0-3");
-            Switch.USB2_4name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_4name, string.Empty, "USB2.0-4");
-            Switch.USB2_5name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_5name, string.Empty, "USB2.0-5");
-            Switch.USB2_6name = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomUSB2_6name, string.Empty, "USB2.0-6");
-            Switch.heater1Mode = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomheater1Mode, string.Empty, "Dew Heater1");
-            Switch.heater2Mode = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomheater2Mode, string.Empty, "Dew Heater2");
-            Switch.heater3Mode = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomheater3Mode, string.Empty, "Switch3");
-            Switch.dew1low = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew1low, string.Empty, "1150")) - 1000;
-            Switch.dew2low = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew2low, string.Empty, "2150")) - 2000;
-            Switch.dew3low = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew3low, string.Empty, "3150")) - 3000;
-            Switch.dew1high = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew1high, string.Empty, "1190")) - 1000;
-            Switch.dew2high = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew2high, string.Empty, "2190")) - 2000;
-            Switch.dew3high = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew3high, string.Empty, "3190")) - 3000;
-            Switch.dew1maximum = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew1maximum, string.Empty, "1255")) - 1000;
-            Switch.dew2maximum = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew2maximum, string.Empty, "2255")) - 2000;
-            Switch.dew3maximum = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew3maximum, string.Empty, "3255")) - 3000;
-            Switch.dew1t = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew1t, string.Empty, "10040")) - 10000;
-            Switch.dew2t = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew2t, string.Empty, "20040")) - 20000;
-            Switch.dew3t = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.Ascomdew3t, string.Empty, "30040")) - 30000;
-            Switch.Sensortype = profile.GetValue("ASCOM.WandererBoxes.Switch", Switch.AscomSensorType, string.Empty, "None");
-            Switch.DC1status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC1status", string.Empty, "3");
-            Switch.DC2status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC2status", string.Empty, "3");
-            Switch.DC3status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC3status", string.Empty, "On");
-            Switch.DC4status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC4status", string.Empty, "On");
-            Switch.DC5_8status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC5_8status", string.Empty, "On");
-            Switch.USB31status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB31status", string.Empty, "On");
-            Switch.USB32status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB32status", string.Empty, "On");
-            Switch.USB33status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB33status", string.Empty, "On");
-            Switch.USB21status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB21status", string.Empty, "On");
-            Switch.USB22status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB22status", string.Empty, "On");
-            Switch.USB23status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB23status", string.Empty, "On");
-            Switch.USB24status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB24status", string.Empty, "On");
-            Switch.USB25status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB25status", string.Empty, "On");
-            Switch.USB26status = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB26status", string.Empty, "On");
+            Switch.DC1name = profile.GetValue(Switch.driverID, Switch.AscomDC1name, string.Empty, "PWM 1");
+            Switch.DC2name = profile.GetValue(Switch.driverID, Switch.AscomDC2name, string.Empty, "PWM 2");
+            Switch.DC3name = profile.GetValue(Switch.driverID, Switch.AscomDC3name, string.Empty, "PWM 3");
+            Switch.DC4name = profile.GetValue(Switch.driverID, Switch.AscomDC4name, string.Empty, "DC OUT 4");
+            Switch.DC5_8name = profile.GetValue(Switch.driverID, Switch.AscomDC5_8name, string.Empty, "DC OUT 5-8");
+            Switch.DC9name = profile.GetValue(Switch.driverID, Switch.AscomDC9name, string.Empty, "DC9 Always ON");
+            Switch.USB3_1name = profile.GetValue(Switch.driverID, Switch.AscomUSB3_1name, string.Empty, "USB3.1-1");
+            Switch.USB3_2name = profile.GetValue(Switch.driverID, Switch.AscomUSB3_2name, string.Empty, "USB3.1-2");
+            Switch.USB3_3name = profile.GetValue(Switch.driverID, Switch.AscomUSB3_3name, string.Empty, "USB3.1-3");
+            Switch.USB2_1name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_1name, string.Empty, "USB2.0-1");
+            Switch.USB2_2name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_2name, string.Empty, "USB2.0-2");
+            Switch.USB2_3name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_3name, string.Empty, "USB2.0-3");
+            Switch.USB2_4name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_4name, string.Empty, "USB2.0-4");
+            Switch.USB2_5name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_5name, string.Empty, "USB2.0-5");
+            Switch.USB2_6name = profile.GetValue(Switch.driverID, Switch.AscomUSB2_6name, string.Empty, "USB2.0-6");
+            Switch.heater1Mode = profile.GetValue(Switch.driverID, Switch.Ascomheater1Mode, string.Empty, "Dew Heater1");
+            Switch.heater2Mode = profile.GetValue(Switch.driverID, Switch.Ascomheater2Mode, string.Empty, "Dew Heater2");
+            Switch.heater3Mode = profile.GetValue(Switch.driverID, Switch.Ascomheater3Mode, string.Empty, "Switch3");
+            Switch.dew1low = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew1low, string.Empty, "1150")) - 1000;
+            Switch.dew2low = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew2low, string.Empty, "2150")) - 2000;
+            Switch.dew3low = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew3low, string.Empty, "3150")) - 3000;
+            Switch.dew1high = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew1high, string.Empty, "1190")) - 1000;
+            Switch.dew2high = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew2high, string.Empty, "2190")) - 2000;
+            Switch.dew3high = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew3high, string.Empty, "3190")) - 3000;
+            Switch.dew1maximum = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew1maximum, string.Empty, "1255")) - 1000;
+            Switch.dew2maximum = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew2maximum, string.Empty, "2255")) - 2000;
+            Switch.dew3maximum = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew3maximum, string.Empty, "3255")) - 3000;
+            Switch.dew1t = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew1t, string.Empty, "10040")) - 10000;
+            Switch.dew2t = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew2t, string.Empty, "20040")) - 20000;
+            Switch.dew3t = Convert.ToInt32(profile.GetValue(Switch.driverID, Switch.Ascomdew3t, string.Empty, "30040")) - 30000;
+            Switch.Sensortype = profile.GetValue(Switch.driverID, Switch.AscomSensorType, string.Empty, "None");
+            Switch.DC1status = profile.GetValue(Switch.driverID, "DC1status", string.Empty, "3");
+            Switch.DC2status = profile.GetValue(Switch.driverID, "DC2status", string.Empty, "3");
+            Switch.DC3status = profile.GetValue(Switch.driverID, "DC3status", string.Empty, "On");
+            Switch.DC4status = profile.GetValue(Switch.driverID, "DC4status", string.Empty, "On");
+            Switch.DC5_8status = profile.GetValue(Switch.driverID, "DC5_8status", string.Empty, "On");
+            Switch.USB31status = profile.GetValue(Switch.driverID, "USB31status", string.Empty, "On");
+            Switch.USB32status = profile.GetValue(Switch.driverID, "USB32status", string.Empty, "On");
+            Switch.USB33status = profile.GetValue(Switch.driverID, "USB33status", string.Empty, "On");
+            Switch.USB21status = profile.GetValue(Switch.driverID, "USB21status", string.Empty, "On");
+            Switch.USB22status = profile.GetValue(Switch.driverID, "USB22status", string.Empty, "On");
+            Switch.USB23status = profile.GetValue(Switch.driverID, "USB23status", string.Empty, "On");
+            Switch.USB24status = profile.GetValue(Switch.driverID, "USB24status", string.Empty, "On");
+            Switch.USB25status = profile.GetValue(Switch.driverID, "USB25status", string.Empty, "On");
+            Switch.USB26status = profile.GetValue(Switch.driverID, "USB26status", string.Empty, "On");
             break;
           }
         case "PlusV2":
           using (Profile profile = new Profile())
           {
             profile.DeviceType = "Switch";
-            Switch.DC1_3name = profile.GetValue("ASCOM.WandererBoxes.Switch", "1-3", string.Empty, "DC 1-3");
-            Switch.DC4name = profile.GetValue("ASCOM.WandererBoxes.Switch", "4", string.Empty, "PWM 1");
-            Switch.DC5name = profile.GetValue("ASCOM.WandererBoxes.Switch", "5", string.Empty, "PWM 2");
-            Switch.DC6name = profile.GetValue("ASCOM.WandererBoxes.Switch", "6", string.Empty, "DC6 Always On");
-            Switch.USBname = profile.GetValue("ASCOM.WandererBoxes.Switch", "USB", string.Empty, "USB Device");
-            Switch.heater1Mode = profile.GetValue("ASCOM.WandererBoxes.Switch", "1mode", string.Empty, "Dew Heater1");
-            Switch.heater2Mode = profile.GetValue("ASCOM.WandererBoxes.Switch", "2mode", string.Empty, "Dew Heater2");
-            Switch.dew1low = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "1low", string.Empty, "1150")) - 1000;
-            Switch.dew2low = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "2low", string.Empty, "2150")) - 2000;
-            Switch.dew1high = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "1high", string.Empty, "1190")) - 1000;
-            Switch.dew2high = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "2high", string.Empty, "2190")) - 2000;
-            Switch.dew1maximum = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "1max", string.Empty, "1255")) - 1000;
-            Switch.dew2maximum = Convert.ToInt32(profile.GetValue("ASCOM.WandererBoxes.Switch", "2max", string.Empty, "2255")) - 2000;
-            Switch.DC1status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC1status", string.Empty, "0");
-            Switch.DC2status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC2status", string.Empty, "0");
-            Switch.DC3status = profile.GetValue("ASCOM.WandererBoxes.Switch", "DC3status", string.Empty, "On");
-            Switch.USBstatus = profile.GetValue("ASCOM.WandererBoxes.Switch", "USBstatus", string.Empty, "On");
-            Switch.Sensortype = profile.GetValue("ASCOM.WandererBoxes.Switch", "type", string.Empty, "None");
+            Switch.DC1_3name = profile.GetValue(Switch.driverID, "1-3", string.Empty, "DC 1-3");
+            Switch.DC4name = profile.GetValue(Switch.driverID, "4", string.Empty, "PWM 1");
+            Switch.DC5name = profile.GetValue(Switch.driverID, "5", string.Empty, "PWM 2");
+            Switch.DC6name = profile.GetValue(Switch.driverID, "6", string.Empty, "DC6 Always On");
+            Switch.USBname = profile.GetValue(Switch.driverID, "USB", string.Empty, "USB Device");
+            Switch.heater1Mode = profile.GetValue(Switch.driverID, "1mode", string.Empty, "Dew Heater1");
+            Switch.heater2Mode = profile.GetValue(Switch.driverID, "2mode", string.Empty, "Dew Heater2");
+            Switch.dew1low = Convert.ToInt32(profile.GetValue(Switch.driverID, "1low", string.Empty, "1150")) - 1000;
+            Switch.dew2low = Convert.ToInt32(profile.GetValue(Switch.driverID, "2low", string.Empty, "2150")) - 2000;
+            Switch.dew1high = Convert.ToInt32(profile.GetValue(Switch.driverID, "1high", string.Empty, "1190")) - 1000;
+            Switch.dew2high = Convert.ToInt32(profile.GetValue(Switch.driverID, "2high", string.Empty, "2190")) - 2000;
+            Switch.dew1maximum = Convert.ToInt32(profile.GetValue(Switch.driverID, "1max", string.Empty, "1255")) - 1000;
+            Switch.dew2maximum = Convert.ToInt32(profile.GetValue(Switch.driverID, "2max", string.Empty, "2255")) - 2000;
+            Switch.DC1status = profile.GetValue(Switch.driverID, "DC1status", string.Empty, "0");
+            Switch.DC2status = profile.GetValue(Switch.driverID, "DC2status", string.Empty, "0");
+            Switch.DC3status = profile.GetValue(Switch.driverID, "DC3status", string.Empty, "On");
+            Switch.USBstatus = profile.GetValue(Switch.driverID, "USBstatus", string.Empty, "On");
+            Switch.Sensortype = profile.GetValue(Switch.driverID, "type", string.Empty, "None");
             break;
           }
       }
@@ -210,7 +210,7 @@ namespace ASCOM.WandererBoxes
       using (Profile profile = new Profile())
       {
         profile.DeviceType = "Switch";
-        profile.WriteValue("ASCOM.WandererBoxes.Switch", "lang", "en");
+        profile.WriteValue(Switch.driverID, "lang", "en");
       }
     }
 
@@ -233,7 +233,7 @@ namespace ASCOM.WandererBoxes
       using (Profile profile = new Profile())
       {
         profile.DeviceType = "Switch";
-        profile.WriteValue("ASCOM.WandererBoxes.Switch", "lang", "cn");
+        profile.WriteValue(Switch.driverID, "lang", "cn");
       }
     }
 
@@ -309,7 +309,7 @@ namespace ASCOM.WandererBoxes
       this.checkBox1.CheckedChanged += new EventHandler(this.checkBox1_CheckedChanged);
       this.picASCOM.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       this.picASCOM.Cursor = Cursors.Hand;
-      this.picASCOM.Image = (Image) Resources.ASCOM;
+      // this.picASCOM.Image = (Image) Resources.ASCOM;
       this.picASCOM.Location = new Point(236, 14);
       this.picASCOM.Name = "picASCOM";
       this.picASCOM.Size = new Size(47, 44);
@@ -348,8 +348,8 @@ namespace ASCOM.WandererBoxes
       this.Controls.Add((Control) this.comboBoxComPort);
       this.Controls.Add((Control) this.label2);
       this.Controls.Add((Control) this.cmdOK);
-      this.Icon = (Icon) componentResourceManager.GetObject("$this.Icon");
-      this.Margin = new Padding(1);
+      // this.Icon = (Icon) componentResourceManager.GetObject("$this.Icon");
+       this.Margin = new Padding(1);
       this.Name = nameof (selectmodel);
       this.Text = "Select product model";
       this.Load += new EventHandler(this.selectmodel_Load);

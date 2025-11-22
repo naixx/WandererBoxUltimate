@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 //
 // TODO - Add your authorship information here
 [assembly: AssemblyTitle("ASCOM.naixxWanderer.Switch")]
-[assembly: AssemblyDescription("ASCOM Local Server Switch driver for naixxWanderer")]
+[assembly: AssemblyDescription("ASCOM Local Server Switch driver for naixxWandere2r")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("The ASCOM Initiative")]
-[assembly: AssemblyProduct("ASCOM Local Server Switch driver for naixxWanderer")]
+[assembly: AssemblyProduct("ASCOM Local Server Switch driver for naixxWanderer2")]
 [assembly: AssemblyCopyright("Copyright © 2025 The ASCOM Initiative")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
