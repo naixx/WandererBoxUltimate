@@ -1056,6 +1056,7 @@ namespace ASCOM.WandererBoxes
                         
                     case "UltimateV2":
                         this.M4 = new UltimateV2Monitor2();
+                        Application.EnableVisualStyles();
                         Application.Run(this.M4);
                         break;
                 }

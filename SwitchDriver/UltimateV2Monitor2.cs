@@ -34,7 +34,7 @@ namespace ASCOM.WandererBoxes
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
         private Button button1;
-        private NotifyIcon notifyIcon1; // Иконка в трее
+        private NotifyIcon notifyIcon1;
         private TableLayoutPanel mainLayout;
         private TableLayoutPanel topLayout;
         private TableLayoutPanel bottomLayout;
@@ -51,7 +51,6 @@ namespace ASCOM.WandererBoxes
 
             startTime = DateTime.Now;
 
-            // Initialize plots
             InitializeVoltagePlot();
             InitializeCurrentPlot();
             InitializeTemperaturePlot();
@@ -60,7 +59,7 @@ namespace ASCOM.WandererBoxes
 
         private double GetElapsedSeconds() => (DateTime.Now - startTime).TotalSeconds;
 
-        private void StylePlot(FormsPlot plot)
+        private void StylePlot(FormsPlot plot, DataLogger dataLogger)
         {
             plot.Plot.FigureBackground.Color = ScottColor.FromHex("#000000");
             plot.Plot.DataBackground.Color = ScottColor.FromHex("#000000");
@@ -83,8 +82,11 @@ namespace ASCOM.WandererBoxes
                 }
             };
 
-            plot.Plot.Layout.Fixed(new PixelPadding(80, 0, 40, 0));
-
+            // Адаптивный padding в зависимости от DPI
+            float dpiScale = this.DeviceDpi / 96f;
+            int leftPadding = (int)(32 * dpiScale);
+            int bottomPadding = (int)(18 * dpiScale);
+            plot.Plot.Layout.Fixed(new PixelPadding(leftPadding, 0, bottomPadding, 0));
 
             plot.Plot.Axes.Left.TickGenerator = new NumericAutomatic { TickDensity = 1 };
             plot.Plot.Title(false);
@@ -92,12 +94,19 @@ namespace ASCOM.WandererBoxes
             plot.Plot.Axes.Left.Label.IsVisible = false;
             plot.Plot.Axes.Margins(bottom: 0, top: 0, left: 0.0, right: 0.0);
             plot.Plot.Axes.AutoScale();
-            plot.Plot.ScaleFactor = 1.2;
+
+            plot.Plot.ScaleFactor = dpiScale;
+
+            dataLogger.LineWidth = 0.7f * dpiScale;
+            dataLogger.MarkerSize = 0;
+
+            float baseFontSize = 12f;
+            float fontSize = baseFontSize * dpiScale /*/ Math.Max(1.0f, dpiScale * 0.7f)*/;
 
             axes.Bottom.TickLabelStyle.ForeColor = ScottColor.FromHex("#FFFFFF");
             axes.Left.TickLabelStyle.ForeColor = ScottColor.FromHex("#FFFFFF");
-            axes.Bottom.TickLabelStyle.FontSize = 25f;
-            axes.Left.TickLabelStyle.FontSize = 25f;
+            axes.Bottom.TickLabelStyle.FontSize = fontSize;
+            axes.Left.TickLabelStyle.FontSize = fontSize;
 
             axes.Bottom.MajorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
             axes.Left.MajorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
@@ -118,10 +127,8 @@ namespace ASCOM.WandererBoxes
 
             vloLog = voltagePlot.Plot.Add.DataLogger();
             vloLog.LegendText = "Voltage (V)";
-            vloLog.LineWidth = 5;
-            vloLog.MarkerSize = 0;
 
-            StylePlot(voltagePlot);
+            StylePlot(voltagePlot, vloLog);
             voltagePlot.Plot.Axes.Bottom.Label.IsVisible = true;
             UpdateDataLoggerView(vloLog, voltagePlot, false);
         }
@@ -136,10 +143,8 @@ namespace ASCOM.WandererBoxes
             currLog = currentPlot.Plot.Add.DataLogger();
 
             currLog.LegendText = "Current (A)";
-            currLog.LineWidth = 5;
-            currLog.MarkerSize = 0;
 
-            StylePlot(currentPlot);
+            StylePlot(currentPlot, currLog);
             UpdateDataLoggerView(currLog, currentPlot, false);
         }
 
@@ -152,10 +157,8 @@ namespace ASCOM.WandererBoxes
             tempLog = temperaturePlot.Plot.Add.DataLogger();
 
             tempLog.LegendText = "Temp (℃)";
-            tempLog.LineWidth = 5;
-            tempLog.MarkerSize = 0;
 
-            StylePlot(temperaturePlot);
+            StylePlot(temperaturePlot, tempLog);
             UpdateDataLoggerView(tempLog, temperaturePlot, false);
         }
 
@@ -170,10 +173,8 @@ namespace ASCOM.WandererBoxes
 
             humLog = humidityPlot.Plot.Add.DataLogger();
             humLog.LegendText = "Humidity (%)";
-            humLog.LineWidth = 5;
-            humLog.MarkerSize = 0;
 
-            StylePlot(humidityPlot);
+            StylePlot(humidityPlot, humLog);
         }
 
         private void UpdateDataLoggerView(DataLogger logger, FormsPlot plot, bool showAll)
@@ -204,12 +205,10 @@ namespace ASCOM.WandererBoxes
             UpdateDataLoggerView(vloLog, voltagePlot, showAllHistory);
             UpdateDataLoggerView(currLog, currentPlot, showAllHistory);
             UpdateDataLoggerView(tempLog, temperaturePlot, showAllHistory);
-            // UpdateDataLoggerView(humLog, humidityPlot, showAllHistory);
 
             voltagePlot.Refresh();
             currentPlot.Refresh();
             temperaturePlot.Refresh();
-            //  humidityPlot.Refresh();
         }
 
         public void OnTimedEvent(object source, EventArgs e)
@@ -227,19 +226,19 @@ namespace ASCOM.WandererBoxes
 
             if (Switch.DHTTstate && Switch.Sensortype == "DHT22")
             {
-                label2.Text = $"Temperature:{Switch.DHTT}℃ from DHT22 sensor";
+                label2.Text = $"Temperature:{Switch.DHTT}℃, DHT22";
                 UpdateTemperatureChart(Switch.DHTT);
             }
 
             if (Switch.DSTstate && Switch.Sensortype == "DS18B20")
             {
-                label2.Text = $"Temperature:{Switch.DST}℃ from DS18B20 probe";
+                label2.Text = $"Temperature:{Switch.DST}℃, DS18B20 probe";
                 UpdateTemperatureChart(Switch.DST);
             }
 
             if (Switch.DHTHstate && Switch.Sensortype == "DHT22")
             {
-                label3.Text = $"Humidity:{Switch.DHTH}% from DHT22 sensor";
+                label3.Text = $"Humidity:{Switch.DHTH}%, DHT22";
                 UpdateHumidityChart(Switch.DHTH);
             }
 
@@ -311,16 +310,13 @@ namespace ASCOM.WandererBoxes
             humidityPlot.Refresh();
         }
 
-        // ИСПРАВЛЕНИЕ #1: Убираем блокировку закрытия окна
         protected override void WndProc(ref Message m)
         {
-            // Старый код блокировал закрытие (SC_CLOSE = 0xF060)
-            // if (m.Msg == 0x112 && (int)m.WParam == 0xF060)
-            //     return;
             base.WndProc(ref m);
         }
 
-        // ИСПРАВЛЕНИЕ #2: Сворачивание в трей вместо закрытия
+        private bool force = false;
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (force)
@@ -334,8 +330,6 @@ namespace ASCOM.WandererBoxes
                 e.Cancel = true;
                 this.Hide();
                 notifyIcon1.Visible = true;
-                // notifyIcon1.ShowBalloonTip(1000, "WandererBox Monitor", 
-                //     "Application minimized to tray", ToolTipIcon.Info);
             }
 
             base.OnFormClosing(e);
@@ -347,8 +341,6 @@ namespace ASCOM.WandererBoxes
             this.WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
         }
-
-        private bool force = false;
 
         public void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -376,6 +368,10 @@ namespace ASCOM.WandererBoxes
         {
             components = new Container();
             ComponentResourceManager resources = new ComponentResourceManager(typeof(UltimateV2Monitor));
+            // AutoScaleDimensions = new SizeF(96f, 96f);
+            // AutoScaleMode = AutoScaleMode.Dpi;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
             mainLayout = new TableLayoutPanel();
             topLayout = new TableLayoutPanel();
@@ -415,17 +411,21 @@ namespace ASCOM.WandererBoxes
             notifyIcon1.DoubleClick += notifyIcon1_DoubleClick;
             notifyIcon1.Visible = false;
 
-            // Main Layout (адаптивная сетка)
+            // Main Layout - адаптивные высоты
+            float dpiScale = this.DeviceDpi / 96f;
+            float headerHeight = 42f * dpiScale;
+            float buttonHeight = 35f * dpiScale;
+
             mainLayout.ColumnCount = 1;
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             mainLayout.RowCount = 4;
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // Header
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40F)); // Top charts
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // Middle header
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 60F)); // Bottom charts
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, headerHeight));
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, headerHeight));
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 60F));
             mainLayout.Dock = DockStyle.Fill;
 
-            // Top Layout (2 графика сверху)
+            // Top Layout
             topLayout.ColumnCount = 2;
             topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
@@ -433,42 +433,39 @@ namespace ASCOM.WandererBoxes
             topLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             topLayout.Dock = DockStyle.Fill;
 
-            // Bottom Layout (2 графика снизу + кнопки)
+            // Bottom Layout
             bottomLayout.ColumnCount = 2;
             bottomLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             bottomLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             bottomLayout.RowCount = 2;
             bottomLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            bottomLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F)); // Кнопки
+            bottomLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, buttonHeight));
             bottomLayout.Dock = DockStyle.Fill;
 
             // voltagePlot
             voltagePlot.DisplayScale = 1F;
             voltagePlot.Dock = DockStyle.Fill;
 
-
             // currentPlot
             currentPlot.DisplayScale = 1F;
             currentPlot.Dock = DockStyle.Fill;
-            // currentPlot.Margin = new Padding(5);
 
             // temperaturePlot
             temperaturePlot.DisplayScale = 1F;
             temperaturePlot.Dock = DockStyle.Fill;
-            //   temperaturePlot.Margin = new Padding(5);
 
             // humidityPlot
             humidityPlot.DisplayScale = 1F;
             humidityPlot.Dock = DockStyle.Fill;
-            //   humidityPlot.Margin = new Padding(5);
+
+            // Адаптивный размер шрифта для контролов
+            float baseFontSize = 10f * dpiScale;
 
             // checkBox1
             checkBox1.AutoSize = true;
-            checkBox1.Font = new Font("Microsoft Sans Serif", 10.5f);
+            checkBox1.Font = new Font("Microsoft Sans Serif", baseFontSize);
             checkBox1.ForeColor = WinFormsColor.White;
             checkBox1.Text = "History data";
-            checkBox1.Anchor = AnchorStyles.Right;
-            checkBox1.Margin = new Padding(10);
             checkBox1.CheckedChanged += checkBox1_CheckedChanged;
 
             // button1
@@ -476,8 +473,7 @@ namespace ASCOM.WandererBoxes
             button1.FlatStyle = FlatStyle.Flat;
             button1.ForeColor = WinFormsColor.White;
             button1.Text = "Clear data";
-            button1.Anchor = AnchorStyles.Right;
-            button1.Margin = new Padding(10);
+            button1.Font = new Font("Microsoft Sans Serif", baseFontSize);
             button1.AutoSize = true;
             button1.Click += button1_Click;
 
@@ -485,37 +481,37 @@ namespace ASCOM.WandererBoxes
             label1.AutoSize = false;
             label1.Dock = DockStyle.Fill;
             label1.BackColor = WinFormsColor.Transparent;
-            label1.Font = new Font("Microsoft Sans Serif", 10.71f);
+            label1.Font = new Font("Microsoft Sans Serif", baseFontSize * 1.05f);
             label1.ForeColor = WinFormsColor.White;
             label1.Text = "Voltage:12.00V   Current:5.00A   Power:60.00W";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             label1.Margin = new Padding(0);
 
             // label2
-            label2.AutoSize = true;
-            label2.BackColor = WinFormsColor.Maroon;
-            label2.Font = new Font("Microsoft Sans Serif", 10.71f);
+            label2.AutoSize = false;
+            label2.Dock = DockStyle.Fill;
+            label2.BackColor = WinFormsColor.Transparent;
+            label2.Font = new Font("Microsoft Sans Serif", baseFontSize);
             label2.ForeColor = WinFormsColor.White;
             label2.Text = "No sensor or wrong sensor selected";
-            label2.TextAlign = ContentAlignment.MiddleLeft;
-            label2.Anchor = AnchorStyles.Left;
-            label2.Margin = new Padding(20, 0, 0, 0);
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            label2.Margin = new Padding(0, 0, 0, 0);
 
             // label3
-            label3.AutoSize = true;
-            label3.BackColor = WinFormsColor.Maroon;
-            label3.Font = new Font("Microsoft Sans Serif", 10.71f);
+            label3.AutoSize = false;
+            label3.Dock = DockStyle.Fill;
+            label3.BackColor = WinFormsColor.Transparent;
+            label3.Font = new Font("Microsoft Sans Serif", baseFontSize);
             label3.ForeColor = WinFormsColor.White;
             label3.Text = "No sensor or wrong sensor selected";
-            label3.TextAlign = ContentAlignment.MiddleLeft;
-            label3.Anchor = AnchorStyles.Left;
-            label3.Margin = new Padding(20, 0, 0, 0);
+            label3.TextAlign = ContentAlignment.MiddleCenter;
+            label3.Margin = new Padding(0, 0, 0, 0);
 
-            // pictureBox1 (верхний фон)
+            // pictureBox1
             pictureBox1.BackColor = WinFormsColor.Maroon;
             pictureBox1.Dock = DockStyle.Fill;
 
-            // pictureBox2 (средний фон)
+            // pictureBox2
             pictureBox2.BackColor = WinFormsColor.Maroon;
             pictureBox2.Dock = DockStyle.Fill;
 
@@ -523,43 +519,40 @@ namespace ASCOM.WandererBoxes
             topLayout.Controls.Add(voltagePlot, 0, 0);
             topLayout.Controls.Add(currentPlot, 1, 0);
 
-            // Добавляем графики и кнопки в bottomLayout
+            // Добавляем графики в bottomLayout
             bottomLayout.Controls.Add(temperaturePlot, 0, 0);
             bottomLayout.Controls.Add(humidityPlot, 1, 0);
 
-            // Панель с кнопками внизу
+            // Панель с кнопками
             TableLayoutPanel buttonPanel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 BackColor = WinFormsColor.Black,
                 ColumnCount = 3,
                 RowCount = 1,
-                Padding = new Padding(10, 5, 10, 5)
+                //  Padding = new Padding((int)(8 * dpiScale))
             };
-            
-            // Колонки: растягиваемая пустая | checkbox | button
-            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // Заполняет все
-            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Checkbox
-            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Button
-            
+
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            
-            // Пустая панель слева для заполнения пространства
+
             Panel spacer = new Panel { Dock = DockStyle.Fill };
-            
-            // Настройка checkbox
+
             checkBox1.Anchor = AnchorStyles.Right;
-            checkBox1.Margin = new Padding(0, 0, 15, 0);
-            
-            // Настройка кнопки
+            checkBox1.Margin = new Padding(0, 0, (int)(12 * dpiScale), 0);
+
             button1.Anchor = AnchorStyles.Right;
             button1.Margin = new Padding(0);
-            button1.Padding = new Padding(15, 10, 15, 10);
-            
+            button1.Margin = new Padding(0, 0, (int)(12 * dpiScale), 0);
+
+            // button1.Padding = new Padding((int)(12 * dpiScale), (int)(8 * dpiScale), (int)(12 * dpiScale), (int)(8 * dpiScale));
+
             buttonPanel.Controls.Add(spacer, 0, 0);
             buttonPanel.Controls.Add(checkBox1, 1, 0);
             buttonPanel.Controls.Add(button1, 2, 0);
-            
+
             bottomLayout.Controls.Add(buttonPanel, 0, 1);
             bottomLayout.SetColumnSpan(buttonPanel, 2);
 
@@ -578,25 +571,19 @@ namespace ASCOM.WandererBoxes
 
             // Собираем mainLayout
             pictureBox1.Controls.Add(label1);
-            label1.Location = new Point(pictureBox1.Width / 2 - label1.Width / 2,
-                pictureBox1.Height / 2 - label1.Height / 2);
 
             mainLayout.Controls.Add(pictureBox1, 0, 0);
             mainLayout.Controls.Add(topLayout, 0, 1);
             mainLayout.Controls.Add(labelPanel, 0, 2);
             mainLayout.Controls.Add(bottomLayout, 0, 3);
 
-            // UltimateV2Monitor2 Form
-            AutoScaleDimensions = new SizeF(144f, 144f);
-            AutoScaleMode = AutoScaleMode.Dpi;
+
             BackColor = WinFormsColor.Black;
-            ClientSize = new Size(1402, 977);
+
+            ClientSize = new Size((int)(Screen.PrimaryScreen.Bounds.Width * 0.6), (int)(Screen.PrimaryScreen.Bounds.Height * 0.6));
             Controls.Add(mainLayout);
-
-            // ИСПРАВЛЕНИЕ #3: Разрешаем ресайз
-            FormBorderStyle = FormBorderStyle.Sizable; // Было Fixed3D
+            FormBorderStyle = FormBorderStyle.Sizable;
             MinimumSize = new Size(800, 600);
-
             Name = "UltimateV2Monitor2";
             Text = "WandererBox Ultimate V2 Monitor";
 
