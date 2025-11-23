@@ -45,8 +45,6 @@ namespace ASCOM.WandererBoxes
         private void UltimateV2Monitor_Load(object sender, EventArgs e)
         {
             Switch.i = 0;
-            Timer timer = new Timer { Interval = 1000, Enabled = true };
-            timer.Tick += OnTimedEvent;
 
             startTime = DateTime.Now;
 

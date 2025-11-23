@@ -32,6 +32,9 @@ namespace ASCOM.WandererBoxes
  [ClassInterface(ClassInterfaceType.None)]
   public class Switch : ISwitchV2
   {
+    private static int GET_SWITCH_VALUE_INTERVAL = 1000;
+    private static int UPDATE_CHART_INTERVAL = 1000;
+    
     internal static string driverID = "ASCOM.naixxWanderer.Switch";
     private static string driverDescription = "WandererBoxes All-in-one(1) 1.8";
     internal static string comPortProfileName = "COM Port";
@@ -1068,7 +1071,7 @@ namespace ASCOM.WandererBoxes
     {
         if (updateTimer == null)
         {
-            updateTimer = new System.Threading.Timer(UpdateMonitorData, null, 0, 400); // Каждую секунду
+            updateTimer = new System.Threading.Timer(UpdateMonitorData, null, 0, UPDATE_CHART_INTERVAL); // Каждую секунду
         }
     }
     
@@ -1648,14 +1651,16 @@ namespace ASCOM.WandererBoxes
 
     public double SwitchStep(short id) => 1.0;
 
+    private DateTime lastDate = DateTime.MinValue;
     public double GetSwitchValue(short id)
     {
       switch (Switch.selectedmodel)
       {
         case "UltimateV2":
-          this.WriteCustomization();
-          if (Switch.datacount >= 15)
+          if ((DateTime.Now - lastDate).TotalMilliseconds > GET_SWITCH_VALUE_INTERVAL )
           {
+            Console.WriteLine("------------------------");
+            this.WriteCustomization();
             try
             {
               Switch.objSerial.ClearBuffers();
@@ -1697,6 +1702,7 @@ namespace ASCOM.WandererBoxes
             catch (Exception ex)
             {
             }
+            lastDate = DateTime.Now;
           }
           ++Switch.datacount;
           if (Switch.datacount >= 100)
