@@ -5,10 +5,6 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WandererProxyBox", "WandererProxyBox.csproj", "{C708E487-E3A9-4073-A545-294B88674225}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASCOM.WandererBoxes.Switch", "..\wand\ASCOM.WandererBoxes.Switch\ASCOM.WandererBoxes.Switch.csproj", "{FE3EE43F-B9F1-4BBB-B4C2-BDD4935E7F43}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProxyApp", "..\TestProxyApp\TestProxyApp.csproj", "{D5207217-61C7-4E94-8097-91DBACE57D2A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
