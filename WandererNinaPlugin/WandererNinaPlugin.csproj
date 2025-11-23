@@ -21,7 +21,7 @@
               DestinationFolder="$(OutputPath)"
               SkipUnchangedFiles="true"
               Condition="'@(AscomCommonDll)' != ''"/>
-    </Target>    
+    </Target>
     <Target Name="CopyAscomTools" AfterTargets="ResolveAssemblyReferences">
         <ItemGroup>
             <AscomCommonDll Include="$(NuGetPackageRoot)ascom.tools\2.2.1\lib\**\ASCOM.Tools.dll"/>
@@ -40,10 +40,10 @@
     <!-- Зависимости для .NET Framework 4.7.2 (ASCOM) -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
         <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
-            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
+
         </Reference>
         <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
-            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
+
         </Reference>
         <Reference Include="System.Windows.Forms"/>
     </ItemGroup>
@@ -62,14 +62,12 @@
     </ItemGroup>
     <ItemGroup>
         <Reference Include="ASCOM.DeviceInterfaces" Condition="'$(TargetFramework)' == 'net472'">
-            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.DeviceInterfaces.dll</HintPath>
         </Reference>
         <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
-            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\WandererProxyBox\WandererProxyBox.csproj"/>
+        <ProjectReference Include="..\WandererProxyBox.csproj"/>
     </ItemGroup>
 
     <!--  <ItemGroup>
@@ -77,6 +75,6 @@
       </ItemGroup>
       <PropertyGroup /> -->
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xA;)&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xA;)&#xA;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xA;xcopy /y /i /c /h /r &quot;$(TargetDir)*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\&quot; &#xA;  xcopy /y /i /c /h /r &quot;$(TargetDir)x64\*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\x64\&quot; " />
+        <Exec Command="&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xA;)&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xA;)&#xA;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xA;xcopy /y /i /c /h /r &quot;$(TargetDir)*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\&quot; &#xA;  xcopy /y /i /c /h /r &quot;$(TargetDir)x64\*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\x64\&quot; "/>
     </Target>
 </Project>
