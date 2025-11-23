@@ -47,7 +47,7 @@ using System.Runtime.InteropServices;
 //[Optional] The url to a featured logo that will be displayed in the plugin list next to the name
 [assembly: AssemblyMetadata("FeaturedImageURL", "")]
 //[Optional] A url to an example screenshot of your plugin in action
-[assembly: AssemblyMetadata("ScreenshotURL", "")]
+[assembly: AssemblyMetadata("ScreenshotURL", "https://raw.githubusercontent.com/naixx/WandererBoxUltimate/refs/heads/master/screen.jpg")]
 //[Optional] An additional url to an example example screenshot of your plugin in action
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 //[Optional] An in-depth description of your plugin
@@ -62,7 +62,7 @@ I disassembled and reverse engineered it to fix the issues: suboptimal serial re
 So I've migrated driver as a native NINA driver, optimized serial read threshold, now profile is stored alpaca-style json in %programdata%/ascom. 
 New charts library. You can now close charts to tray.
 
-Tested for Ultimate v2, should workf or Plus v2 but not tested. 
+Tested with Ultimate v2, should work with Plus v2 but not tested. 
 
 all rights reserved by their respective owners
 ")]
