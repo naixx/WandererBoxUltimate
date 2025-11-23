@@ -457,7 +457,7 @@ namespace ASCOM.WandererBoxes
               break;
             case "UltimateV2":
               if (this.M4 != null)
-              this.M4.Close();
+                closeForm();
               break;
           }
           Switch.objSerial.Connected = false;
@@ -659,7 +659,7 @@ namespace ASCOM.WandererBoxes
             }
             else
             {
-              this.M4.Close();
+              closeForm();
               this.LogMessage("Connected Set", "Disconnecting from port {0}", (object) Switch.comPort);
               Switch.objSerial.Connected = false;
               this.connectedState = false;
@@ -834,7 +834,7 @@ namespace ASCOM.WandererBoxes
             }
             else
             {
-              this.M4.Close();
+              closeForm();
               this.LogMessage("Connected Set", "Disconnecting from port {0}", (object) Switch.comPort);
               Switch.objSerial.Connected = false;
               this.connectedState = false;
@@ -1014,6 +1014,12 @@ namespace ASCOM.WandererBoxes
       }
     }
 
+    void closeForm()
+    {
+      this.M4.exitToolStripMenuItem_Click(null, null);
+      updateTimer.Dispose();
+      updateTimer = null;
+    }
     // private void OnTimedEvent3()
     // {
     //   switch (Switch.selectedmodel)
@@ -1659,7 +1665,6 @@ namespace ASCOM.WandererBoxes
         case "UltimateV2":
           if ((DateTime.Now - lastDate).TotalMilliseconds > GET_SWITCH_VALUE_INTERVAL )
           {
-            Console.WriteLine("------------------------");
             this.WriteCustomization();
             try
             {

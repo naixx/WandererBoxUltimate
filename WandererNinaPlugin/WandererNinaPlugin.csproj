@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Naixx.NINA.Wanderer</RootNamespace>
+        <AssemblyName>Naixx.NINA.Wanderer</AssemblyName>
+        <UseWindowsForms>true</UseWindowsForms>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <UseWPF>true</UseWPF>
+        <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    </PropertyGroup>
+
+    <Target Name="CopyAscomCommon" AfterTargets="ResolveAssemblyReferences">
+        <ItemGroup>
+            <AscomCommonDll Include="$(NuGetPackageRoot)ascom.common.components\2.2.1\lib\**\ASCOM.Common.dll"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(AscomCommonDll)"
+              DestinationFolder="$(OutputPath)"
+              SkipUnchangedFiles="true"
+              Condition="'@(AscomCommonDll)' != ''"/>
+    </Target>    
+    <Target Name="CopyAscomTools" AfterTargets="ResolveAssemblyReferences">
+        <ItemGroup>
+            <AscomCommonDll Include="$(NuGetPackageRoot)ascom.tools\2.2.1\lib\**\ASCOM.Tools.dll"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(AscomCommonDll)"
+              DestinationFolder="$(OutputPath)"
+              SkipUnchangedFiles="true"
+              Condition="'@(AscomCommonDll)' != ''"/>
+    </Target>
+    <!-- Зависимости для .NET 8 (NINA) -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+        <PackageReference Include="NINA.Plugin" Version="3.0.0.2017-beta"/>
+        <PackageReference Include="System.IO.Ports" Version="8.0.0"/>
+    </ItemGroup>
+
+    <!-- Зависимости для .NET Framework 4.7.2 (ASCOM) -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+        <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
+            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
+        </Reference>
+        <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
+            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Windows.Forms"/>
+    </ItemGroup>
+
+    <!-- Общие зависимости -->
+    <ItemGroup>
+        <PackageReference Include="ASCOM.Common.Components" Version="2.2.1">
+            <Private>true</Private>
+            <ExcludeAssets>none</ExcludeAssets>
+        </PackageReference>
+        <PackageReference Include="ASCOM.DeviceInterfaces" Version="7.0.0"/>
+        <PackageReference Include="NINA.Equipment" Version="3.2.0.9001"/>
+        <PackageReference Include="System.IO.Ports" Version="8.0.0"
+                          Condition="'$(TargetFramework)' == 'net472'"/>
+        <PackageReference Include="System.Memory" Version="4.6.3"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="ASCOM.DeviceInterfaces" Condition="'$(TargetFramework)' == 'net472'">
+            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.DeviceInterfaces.dll</HintPath>
+        </Reference>
+        <Reference Include="ASCOM.Utilities" Condition="'$(TargetFramework)' == 'net472'">
+            <HintPath>..\..\WandererProxyBox\bin\Debug\ASCOM.Utilities.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\WandererProxyBox\WandererProxyBox.csproj"/>
+    </ItemGroup>
+
+    <!--  <ItemGroup>
+        <PackageReference Include="NINA.Plugin" Version="3.0.0.2017-beta" />
+      </ItemGroup>
+      <PropertyGroup /> -->
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xA;)&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; (&#xA;  echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xA;)&#xA;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xA;xcopy /y /i /c /h /r &quot;$(TargetDir)*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\&quot; &#xA;  xcopy /y /i /c /h /r &quot;$(TargetDir)x64\*.dll&quot; &quot;%localappdata%\NINA\Plugins\3.0.0\$(TargetName)\x64\&quot; " />
+    </Target>
+</Project>

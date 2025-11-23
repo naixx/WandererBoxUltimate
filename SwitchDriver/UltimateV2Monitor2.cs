@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ScottPlot;
-using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using ScottPlot.WinForms;
@@ -14,7 +13,7 @@ using ScottColor = ScottPlot.Color;
 
 namespace ASCOM.WandererBoxes
 {
-    public partial class UltimateV2Monitor2 : Form
+    public class UltimateV2Monitor2 : Form
     {
         private DateTime startTime;
 
@@ -35,6 +34,10 @@ namespace ASCOM.WandererBoxes
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
         private Button button1;
+        private NotifyIcon notifyIcon1; // Иконка в трее
+        private TableLayoutPanel mainLayout;
+        private TableLayoutPanel topLayout;
+        private TableLayoutPanel bottomLayout;
 
         public UltimateV2Monitor2()
         {
@@ -59,7 +62,7 @@ namespace ASCOM.WandererBoxes
 
         private void StylePlot(FormsPlot plot)
         {
-            plot.Plot.FigureBackground.Color = ScottColor.FromHex("#100000");
+            plot.Plot.FigureBackground.Color = ScottColor.FromHex("#000000");
             plot.Plot.DataBackground.Color = ScottColor.FromHex("#000000");
 
             var axes = plot.Plot.Axes;
@@ -80,17 +83,15 @@ namespace ASCOM.WandererBoxes
                 }
             };
 
-            plot.Plot.Axes.Left.TickGenerator = new NumericAutomatic { TickDensity = 1 };
+            plot.Plot.Layout.Fixed(new PixelPadding(80, 0, 40, 0));
 
+
+            plot.Plot.Axes.Left.TickGenerator = new NumericAutomatic { TickDensity = 1 };
             plot.Plot.Title(false);
             plot.Plot.Axes.Bottom.Label.IsVisible = false;
             plot.Plot.Axes.Left.Label.IsVisible = false;
-
-            // ИСПРАВЛЕНИЕ #2: Убираем паддинг внизу графиков
             plot.Plot.Axes.Margins(bottom: 0, top: 0, left: 0.0, right: 0.0);
-
             plot.Plot.Axes.AutoScale();
-
             plot.Plot.ScaleFactor = 1.2;
 
             axes.Bottom.TickLabelStyle.ForeColor = ScottColor.FromHex("#FFFFFF");
@@ -100,20 +101,17 @@ namespace ASCOM.WandererBoxes
 
             axes.Bottom.MajorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
             axes.Left.MajorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
-
             axes.Bottom.MinorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
             axes.Left.MinorTickStyle.Color = ScottColor.FromHex("#FFFFFF");
-
             axes.Bottom.FrameLineStyle.Color = ScottColor.FromHex("#FFFFFF");
             axes.Left.FrameLineStyle.Color = ScottColor.FromHex("#FFFFFF");
 
             plot.Plot.Grid.MajorLineColor = ScottColor.FromHex("#333333");
         }
-        
+
         private void InitializeVoltagePlot()
         {
             voltagePlot.Plot.Clear();
-
             voltagePlot.Plot.Title("Voltage (V)");
             voltagePlot.Plot.Axes.Bottom.Label.Text = "Time";
             voltagePlot.Plot.Axes.Left.Label.Text = "Voltage (V)";
@@ -125,15 +123,12 @@ namespace ASCOM.WandererBoxes
 
             StylePlot(voltagePlot);
             voltagePlot.Plot.Axes.Bottom.Label.IsVisible = true;
-
-            // Устанавливаем начальный режим отображения (последняя минута)
             UpdateDataLoggerView(vloLog, voltagePlot, false);
         }
 
         private void InitializeCurrentPlot()
         {
             currentPlot.Plot.Clear();
-
             currentPlot.Plot.Title("Current (A)");
             currentPlot.Plot.Axes.Bottom.Label.Text = "Time";
             currentPlot.Plot.Axes.Left.Label.Text = "Current (A)";
@@ -145,15 +140,12 @@ namespace ASCOM.WandererBoxes
             currLog.MarkerSize = 0;
 
             StylePlot(currentPlot);
-
-            // Устанавливаем начальный режим отображения (последняя минута)
             UpdateDataLoggerView(currLog, currentPlot, false);
         }
 
         private void InitializeTemperaturePlot()
         {
             temperaturePlot.Plot.Clear();
-
             temperaturePlot.Plot.Title("Temperature (℃)");
             temperaturePlot.Plot.Axes.Bottom.Label.Text = "Time";
             temperaturePlot.Plot.Axes.Left.Label.Text = "Temp (℃)";
@@ -164,15 +156,12 @@ namespace ASCOM.WandererBoxes
             tempLog.MarkerSize = 0;
 
             StylePlot(temperaturePlot);
-
-            // Устанавливаем начальный режим отображения (последняя минута)
             UpdateDataLoggerView(tempLog, temperaturePlot, false);
         }
 
         private void InitializeHumidityPlot()
         {
             humidityPlot.Plot.Clear();
-
             humidityPlot.Plot.Title("Humidity (%)");
             humidityPlot.Plot.Axes.Bottom.Label.Text = "Time";
             humidityPlot.Plot.Axes.Left.Label.Text = "Humidity (%)";
@@ -180,21 +169,17 @@ namespace ASCOM.WandererBoxes
             humidityPlot.Plot.Axes.Left.Max = 100;
 
             humLog = humidityPlot.Plot.Add.DataLogger();
-
             humLog.LegendText = "Humidity (%)";
             humLog.LineWidth = 5;
             humLog.MarkerSize = 0;
-            humLog.ViewFull();
 
             StylePlot(humidityPlot);
         }
 
-        // ИСПРАВЛЕНИЕ #1: Метод для управления отображением по времени
         private void UpdateDataLoggerView(DataLogger logger, FormsPlot plot, bool showAll)
         {
-            double oneMinuteInOADate = 60f*5 / (24 * 60 * 60);
+            double oneMinuteInOADate = 60f * 5 / (24 * 60 * 60);
             var w = oneMinuteInOADate;
-
 
             if (showAll)
             {
@@ -212,22 +197,21 @@ namespace ASCOM.WandererBoxes
                 logger.AxisManager = slideManager;
             }
         }
-        
+
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             bool showAllHistory = checkBox1.Checked;
             UpdateDataLoggerView(vloLog, voltagePlot, showAllHistory);
             UpdateDataLoggerView(currLog, currentPlot, showAllHistory);
             UpdateDataLoggerView(tempLog, temperaturePlot, showAllHistory);
-           // UpdateDataLoggerView(humLog, humidityPlot, showAllHistory);
+            // UpdateDataLoggerView(humLog, humidityPlot, showAllHistory);
 
-            // Обновляем графики
             voltagePlot.Refresh();
             currentPlot.Refresh();
             temperaturePlot.Refresh();
-          //  humidityPlot.Refresh();
+            //  humidityPlot.Refresh();
         }
-        
+
         public void OnTimedEvent(object source, EventArgs e)
         {
             if (InvokeRequired)
@@ -279,17 +263,12 @@ namespace ASCOM.WandererBoxes
                 return;
             }
 
-            double elapsedTime = GetElapsedSeconds();
             data.Add(DateTime.Now.ToOADate(), value);
-
             data.Color = color;
 
-            // if (data.Data.Coordinates.Any())
-            // {
             var (yMin, yMax) = yLimitsFunc(data.Data.Coordinates.Min(c => c.Y), data.Data.Coordinates.Max(c => c.Y));
             data.Axes.YAxis.Min = yMin;
             data.Axes.YAxis.Max = yMax;
-            // }
 
             plot.Refresh();
         }
@@ -332,17 +311,75 @@ namespace ASCOM.WandererBoxes
             humidityPlot.Refresh();
         }
 
+        // ИСПРАВЛЕНИЕ #1: Убираем блокировку закрытия окна
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == 0x112 && (int)m.WParam == 0xF060)
-                return;
+            // Старый код блокировал закрытие (SC_CLOSE = 0xF060)
+            // if (m.Msg == 0x112 && (int)m.WParam == 0xF060)
+            //     return;
             base.WndProc(ref m);
+        }
+
+        // ИСПРАВЛЕНИЕ #2: Сворачивание в трей вместо закрытия
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (force)
+            {
+                base.OnFormClosing(e);
+                return;
+            }
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.Hide();
+                notifyIcon1.Visible = true;
+                // notifyIcon1.ShowBalloonTip(1000, "WandererBox Monitor", 
+                //     "Application minimized to tray", ToolTipIcon.Info);
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+        }
+
+        private bool force = false;
+
+        public void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler(exitToolStripMenuItem_Click), sender, e);
+                return;
+            }
+
+            notifyIcon1.Visible = false;
+            force = true;
+            Close();
+            Dispose();
+            Application.Exit();
+        }
+
+        private void showToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
         }
 
         private void InitializeComponent()
         {
+            components = new Container();
             ComponentResourceManager resources = new ComponentResourceManager(typeof(UltimateV2Monitor));
 
+            mainLayout = new TableLayoutPanel();
+            topLayout = new TableLayoutPanel();
+            bottomLayout = new TableLayoutPanel();
             voltagePlot = new FormsPlot();
             currentPlot = new FormsPlot();
             temperaturePlot = new FormsPlot();
@@ -354,145 +391,236 @@ namespace ASCOM.WandererBoxes
             pictureBox1 = new PictureBox();
             pictureBox2 = new PictureBox();
             button1 = new Button();
+            notifyIcon1 = new NotifyIcon(components);
 
             ((ISupportInitialize)pictureBox1).BeginInit();
             ((ISupportInitialize)pictureBox2).BeginInit();
+            mainLayout.SuspendLayout();
+            topLayout.SuspendLayout();
+            bottomLayout.SuspendLayout();
             SuspendLayout();
+
+            // NotifyIcon setup
+            ContextMenuStrip trayMenu = new ContextMenuStrip();
+            ToolStripMenuItem showItem = new ToolStripMenuItem("Show");
+            ToolStripMenuItem exitItem = new ToolStripMenuItem("Exit");
+            showItem.Click += showToolStripMenuItem_Click;
+            exitItem.Click += exitToolStripMenuItem_Click;
+            trayMenu.Items.Add(showItem);
+            trayMenu.Items.Add(exitItem);
+
+            notifyIcon1.Icon = SystemIcons.Application;
+            notifyIcon1.Text = "WandererBox Monitor";
+            notifyIcon1.ContextMenuStrip = trayMenu;
+            notifyIcon1.DoubleClick += notifyIcon1_DoubleClick;
+            notifyIcon1.Visible = false;
+
+            // Main Layout (адаптивная сетка)
+            mainLayout.ColumnCount = 1;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            mainLayout.RowCount = 4;
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // Header
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40F)); // Top charts
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // Middle header
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 60F)); // Bottom charts
+            mainLayout.Dock = DockStyle.Fill;
+
+            // Top Layout (2 графика сверху)
+            topLayout.ColumnCount = 2;
+            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            topLayout.RowCount = 1;
+            topLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            topLayout.Dock = DockStyle.Fill;
+
+            // Bottom Layout (2 графика снизу + кнопки)
+            bottomLayout.ColumnCount = 2;
+            bottomLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            bottomLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            bottomLayout.RowCount = 2;
+            bottomLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            bottomLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F)); // Кнопки
+            bottomLayout.Dock = DockStyle.Fill;
 
             // voltagePlot
             voltagePlot.DisplayScale = 1F;
-            voltagePlot.Location = new Point(10, 81);
-            voltagePlot.Name = "voltagePlot";
-            voltagePlot.Size = new Size(780, 329);
-            voltagePlot.TabIndex = 0;
+            voltagePlot.Dock = DockStyle.Fill;
+
 
             // currentPlot
             currentPlot.DisplayScale = 1F;
-            currentPlot.Location = new Point(810, 81);
-            currentPlot.Name = "currentPlot";
-            currentPlot.Size = new Size(780, 329);
-            currentPlot.TabIndex = 1;
+            currentPlot.Dock = DockStyle.Fill;
+            // currentPlot.Margin = new Padding(5);
 
             // temperaturePlot
             temperaturePlot.DisplayScale = 1F;
-            temperaturePlot.Location = new Point(10, 501);
-            temperaturePlot.Name = "temperaturePlot";
-            temperaturePlot.Size = new Size(780, 421);
-            temperaturePlot.TabIndex = 2;
+            temperaturePlot.Dock = DockStyle.Fill;
+            //   temperaturePlot.Margin = new Padding(5);
 
             // humidityPlot
             humidityPlot.DisplayScale = 1F;
-            humidityPlot.Location = new Point(810, 501);
-            humidityPlot.Name = "humidityPlot";
-            humidityPlot.Size = new Size(780, 421);
-            humidityPlot.TabIndex = 3;
+            humidityPlot.Dock = DockStyle.Fill;
+            //   humidityPlot.Margin = new Padding(5);
 
             // checkBox1
             checkBox1.AutoSize = true;
             checkBox1.Font = new Font("Microsoft Sans Serif", 10.5f);
             checkBox1.ForeColor = WinFormsColor.White;
-            checkBox1.Location = new Point(1243, 932);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(154, 26);
-            checkBox1.TabIndex = 4;
             checkBox1.Text = "History data";
-            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.Anchor = AnchorStyles.Right;
+            checkBox1.Margin = new Padding(10);
             checkBox1.CheckedChanged += checkBox1_CheckedChanged;
 
+            // button1
+            button1.BackColor = WinFormsColor.Maroon;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.ForeColor = WinFormsColor.White;
+            button1.Text = "Clear data";
+            button1.Anchor = AnchorStyles.Right;
+            button1.Margin = new Padding(10);
+            button1.AutoSize = true;
+            button1.Click += button1_Click;
+
             // label1
-            label1.AutoSize = true;
-            label1.BackColor = WinFormsColor.Maroon;
+            label1.AutoSize = false;
+            label1.Dock = DockStyle.Fill;
+            label1.BackColor = WinFormsColor.Transparent;
             label1.Font = new Font("Microsoft Sans Serif", 10.71f);
             label1.ForeColor = WinFormsColor.White;
-            label1.Location = new Point(455, 11);
-            label1.Name = "label1";
-            label1.Size = new Size(504, 30);
-            label1.TabIndex = 5;
             label1.Text = "Voltage:12.00V   Current:5.00A   Power:60.00W";
             label1.TextAlign = ContentAlignment.MiddleCenter;
+            label1.Margin = new Padding(0);
 
             // label2
             label2.AutoSize = true;
             label2.BackColor = WinFormsColor.Maroon;
             label2.Font = new Font("Microsoft Sans Serif", 10.71f);
             label2.ForeColor = WinFormsColor.White;
-            label2.Location = new Point(42, 431);
-            label2.Name = "label2";
-            label2.Size = new Size(390, 30);
-            label2.TabIndex = 6;
             label2.Text = "No sensor or wrong sensor selected";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
+            label2.TextAlign = ContentAlignment.MiddleLeft;
+            label2.Anchor = AnchorStyles.Left;
+            label2.Margin = new Padding(20, 0, 0, 0);
 
             // label3
             label3.AutoSize = true;
             label3.BackColor = WinFormsColor.Maroon;
             label3.Font = new Font("Microsoft Sans Serif", 10.71f);
             label3.ForeColor = WinFormsColor.White;
-            label3.Location = new Point(831, 431);
-            label3.Name = "label3";
-            label3.Size = new Size(390, 30);
-            label3.TabIndex = 7;
             label3.Text = "No sensor or wrong sensor selected";
-            label3.TextAlign = ContentAlignment.MiddleCenter;
+            label3.TextAlign = ContentAlignment.MiddleLeft;
+            label3.Anchor = AnchorStyles.Left;
+            label3.Margin = new Padding(20, 0, 0, 0);
 
-            // pictureBox1
+            // pictureBox1 (верхний фон)
             pictureBox1.BackColor = WinFormsColor.Maroon;
-            pictureBox1.Location = new Point(-13, -12);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(1683, 84);
-            pictureBox1.TabIndex = 8;
-            pictureBox1.TabStop = false;
+            pictureBox1.Dock = DockStyle.Fill;
 
-            // pictureBox2
+            // pictureBox2 (средний фон)
             pictureBox2.BackColor = WinFormsColor.Maroon;
-            pictureBox2.Location = new Point(-13, 408);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(1638, 84);
-            pictureBox2.TabIndex = 9;
-            pictureBox2.TabStop = false;
+            pictureBox2.Dock = DockStyle.Fill;
 
-            // button1
-            button1.BackColor = WinFormsColor.Maroon;
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.ForeColor = WinFormsColor.White;
-            button1.Location = new Point(1426, 927);
-            button1.Name = "button1";
-            button1.Size = new Size(110, 37);
-            button1.TabIndex = 10;
-            button1.Text = "Clear data";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += button1_Click;
+            // Добавляем графики в topLayout
+            topLayout.Controls.Add(voltagePlot, 0, 0);
+            topLayout.Controls.Add(currentPlot, 1, 0);
 
-            // UltimateV2Monitor2
+            // Добавляем графики и кнопки в bottomLayout
+            bottomLayout.Controls.Add(temperaturePlot, 0, 0);
+            bottomLayout.Controls.Add(humidityPlot, 1, 0);
+
+            // Панель с кнопками внизу
+            TableLayoutPanel buttonPanel = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = WinFormsColor.Black,
+                ColumnCount = 3,
+                RowCount = 1,
+                Padding = new Padding(10, 5, 10, 5)
+            };
+            
+            // Колонки: растягиваемая пустая | checkbox | button
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // Заполняет все
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Checkbox
+            buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Button
+            
+            buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            
+            // Пустая панель слева для заполнения пространства
+            Panel spacer = new Panel { Dock = DockStyle.Fill };
+            
+            // Настройка checkbox
+            checkBox1.Anchor = AnchorStyles.Right;
+            checkBox1.Margin = new Padding(0, 0, 15, 0);
+            
+            // Настройка кнопки
+            button1.Anchor = AnchorStyles.Right;
+            button1.Margin = new Padding(0);
+            button1.Padding = new Padding(15, 10, 15, 10);
+            
+            buttonPanel.Controls.Add(spacer, 0, 0);
+            buttonPanel.Controls.Add(checkBox1, 1, 0);
+            buttonPanel.Controls.Add(button1, 2, 0);
+            
+            bottomLayout.Controls.Add(buttonPanel, 0, 1);
+            bottomLayout.SetColumnSpan(buttonPanel, 2);
+
+            // Панель с label2 и label3
+            TableLayoutPanel labelPanel = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                BackColor = WinFormsColor.Maroon
+            };
+            labelPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            labelPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            labelPanel.Controls.Add(label2, 0, 0);
+            labelPanel.Controls.Add(label3, 1, 0);
+
+            // Собираем mainLayout
+            pictureBox1.Controls.Add(label1);
+            label1.Location = new Point(pictureBox1.Width / 2 - label1.Width / 2,
+                pictureBox1.Height / 2 - label1.Height / 2);
+
+            mainLayout.Controls.Add(pictureBox1, 0, 0);
+            mainLayout.Controls.Add(topLayout, 0, 1);
+            mainLayout.Controls.Add(labelPanel, 0, 2);
+            mainLayout.Controls.Add(bottomLayout, 0, 3);
+
+            // UltimateV2Monitor2 Form
             AutoScaleDimensions = new SizeF(144f, 144f);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = WinFormsColor.Black;
-            ClientSize = new Size(1602, 977);
-            Controls.Add(button1);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(humidityPlot);
-            Controls.Add(temperaturePlot);
-            Controls.Add(currentPlot);
-            Controls.Add(label1);
-            Controls.Add(checkBox1);
-            Controls.Add(voltagePlot);
-            Controls.Add(pictureBox1);
-            Controls.Add(pictureBox2);
-            FormBorderStyle = FormBorderStyle.Fixed3D;
+            ClientSize = new Size(1402, 977);
+            Controls.Add(mainLayout);
+
+            // ИСПРАВЛЕНИЕ #3: Разрешаем ресайз
+            FormBorderStyle = FormBorderStyle.Sizable; // Было Fixed3D
+            MinimumSize = new Size(800, 600);
+
             Name = "UltimateV2Monitor2";
             Text = "WandererBox Ultimate V2 Monitor";
 
             ((ISupportInitialize)pictureBox1).EndInit();
             ((ISupportInitialize)pictureBox2).EndInit();
+            mainLayout.ResumeLayout(false);
+            topLayout.ResumeLayout(false);
+            bottomLayout.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
-                components.Dispose();
+            if (disposing)
+            {
+                if (components != null)
+                    components.Dispose();
+                if (notifyIcon1 != null)
+                {
+                    notifyIcon1.Visible = false;
+                    notifyIcon1.Dispose();
+                }
+            }
+
             base.Dispose(disposing);
         }
     }
