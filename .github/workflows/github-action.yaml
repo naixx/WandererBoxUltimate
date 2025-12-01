@@ -51,7 +51,7 @@ jobs:
       - name: Prepare package
         run: |
           Copy-Item "bin/Release/*.dll" "packages/${{ env.PLUGIN_NAME }}/" -Force
-          Copy-Item "bin/Release/x64/*.dll" "packages/${{ env.PLUGIN_NAME }}/x64" -Force
+          Copy-Item "bin/Release/x64/*.dll" "packages/${{ env.PLUGIN_NAME }}/x64/" -Force
           Copy-Item "bin/Release/${{ env.PLUGIN_DLL_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_DLL_NAME }}.pdb" -Force          
           
       - name: Create Plugin archives and manifests
